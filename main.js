@@ -15,7 +15,7 @@ const $tetramino = document.querySelector('#tetraminos')
 
 let deltaX = 0
 let lastTouchX = 0
-const touchSpeed = 32
+const touchSpeed = 24
 
 let score = 0
 
@@ -94,10 +94,11 @@ function onTouchStart (eventTouch) {
   const touch = eventTouch.touches[0]
   initialTouch.x = touch.clientX
   initialTouch.y = touch.clientY
+
+  lastTouchX = initialTouch.x
 }
 
 function onTouchMove (eventTouch) {
-  console.log(eventTouch)
   const touch = eventTouch.touches[0]
   const currentTouchX = touch.clientX
 
