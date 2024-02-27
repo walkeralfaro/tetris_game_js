@@ -7,6 +7,17 @@ const ctx = canvas.getContext('2d')
 const $score = document.querySelector('span')
 const $tetramino = document.querySelector('#tetraminos')
 
+const $touchRight = false
+const $touchLeft = false
+let $touchEnd = true
+
+const $keyLeft = false
+
+let deltaX = 0
+let saveX = 0
+
+deltaX = 0
+
 let score = 0
 
 canvas.width = BLOCK_SIZE * BOARD_WIDTH
@@ -60,6 +71,90 @@ const PIECES = [
     [0, 6, 6]
   ]
 ]
+
+canvas.addEventListener('touchstart', onTouchStart)
+canvas.addEventListener('touchmove', onTouchMove)
+canvas.addEventListener('touchend', onTouchEnd)
+
+function onTouchEnd (eventTouch) {
+  eventTouch.preventDefault()
+  $touchEnd = true
+  console.log('fin del toque')
+}
+
+function onTouchMove (eventTouch) {
+  eventTouch.preventDefault()
+  const touch = eventTouch.touches[0]
+  const x = touch.clientX - canvas.offsetLeft
+  const y = touch.clientY - canvas.offsetTop
+  deltaX = saveX - x
+  saveX = x
+
+  console.log(x, deltaX)
+
+  if (deltaX >= 0) {
+    movePieceLeft()
+  } else {
+    movePieceRight()
+  }
+
+  // console.log('Touch Move en (' + x + ', ' + y + ')')
+}
+
+function onTouchStart (eventTouch) {
+  eventTouch.preventDefault()
+  console.log('tocó')
+}
+
+function movePieceLeft () {
+  piece.position.x--
+  if (checkCollition()) {
+    piece.position.x++
+  }
+}
+
+function movePieceRight () {
+  piece.position.x++
+  if (checkCollition()) {
+    piece.position.x--
+  }
+}
+
+document.addEventListener('keydown', (event) => {
+  if (event.key === EVENT_MOVEMENTS.LEFT) movePieceLeft()
+  if (event.key === EVENT_MOVEMENTS.RIGHT) movePieceRight()
+  // move down
+  if (event.key === EVENT_MOVEMENTS.DOWN) {
+    piece.position.y++
+    if (checkCollition()) {
+      piece.position.y--
+      solidifyPiece()
+      removeRows()
+    }
+  }
+  // rotate
+  if (event.key === EVENT_MOVEMENTS.UP) {
+    const rotated = []
+
+    // console.log(piece.shape.length)
+
+    for (let i = 0; i < piece.shape[0].length; i++) {
+      const row = []
+
+      for (let j = piece.shape.length - 1; j >= 0; j--) {
+        row.push(piece.shape[j][i])
+      }
+
+      rotated.push(row)
+    }
+
+    const previousShape = piece.shape
+    piece.shape = rotated
+    if (checkCollition()) {
+      piece.shape = previousShape
+    }
+  }
+})
 
 // 2. game loop
 let dropCounter = 0
@@ -139,51 +234,6 @@ function drawBoard () {
     })
   })
 }
-
-document.addEventListener('keydown', (e) => {
-  if (e.key === EVENT_MOVEMENTS.LEFT) {
-    piece.position.x--
-    if (checkCollition()) {
-      piece.position.x++
-    }
-  }
-  if (e.key === EVENT_MOVEMENTS.DOWN) {
-    piece.position.y++
-    if (checkCollition()) {
-      piece.position.y--
-      solidifyPiece()
-      removeRows()
-    }
-  }
-  if (e.key === EVENT_MOVEMENTS.RIGHT) {
-    piece.position.x++
-    console.log(board)
-    if (checkCollition()) {
-      piece.position.x--
-    }
-  }
-  if (e.key === EVENT_MOVEMENTS.UP) {
-    const rotated = []
-
-    // console.log(piece.shape.length)
-
-    for (let i = 0; i < piece.shape[0].length; i++) {
-      const row = []
-
-      for (let j = piece.shape.length - 1; j >= 0; j--) {
-        row.push(piece.shape[j][i])
-      }
-
-      rotated.push(row)
-    }
-
-    const previousShape = piece.shape
-    piece.shape = rotated
-    if (checkCollition()) {
-      piece.shape = previousShape
-    }
-  }
-})
 
 function checkCollition () {
   return piece.shape.some((row, y) => {
