@@ -7,16 +7,15 @@ const ctx = canvas.getContext('2d')
 const $score = document.querySelector('span')
 const $tetramino = document.querySelector('#tetraminos')
 
-const $touchRight = false
-const $touchLeft = false
-let $touchEnd = true
+// const $touchRight = false
+// const $touchLeft = false
+// let $touchEnd = true
 
-const $keyLeft = false
+// const $keyLeft = false
 
 let deltaX = 0
-let saveX = 0
-
-deltaX = 0
+let lastTouchX = 0
+const touchSpeed = 32
 
 let score = 0
 
@@ -72,38 +71,47 @@ const PIECES = [
   ]
 ]
 
-canvas.addEventListener('touchstart', onTouchStart)
-canvas.addEventListener('touchmove', onTouchMove)
-canvas.addEventListener('touchend', onTouchEnd)
+window.addEventListener('touchstart', onTouchStart)
+window.addEventListener('touchmove', onTouchMove)
+window.addEventListener('touchend', onTouchEnd)
+
+const initialTouch = {
+  x: 0,
+  y: 0
+}
+
+// let lastTouchX = 0
 
 function onTouchEnd (eventTouch) {
-  eventTouch.preventDefault()
-  $touchEnd = true
-  console.log('fin del toque')
+  const endTouchX = eventTouch.changedTouches[0].clientX
+  const endTouchY = eventTouch.changedTouches[0].clientY
+
+  if (endTouchX === initialTouch.x && endTouchY === initialTouch.y) {
+    rotatePiece()
+  }
+}
+function onTouchStart (eventTouch) {
+  const touch = eventTouch.touches[0]
+  initialTouch.x = touch.clientX
+  initialTouch.y = touch.clientY
 }
 
 function onTouchMove (eventTouch) {
-  eventTouch.preventDefault()
+  console.log(eventTouch)
   const touch = eventTouch.touches[0]
-  const x = touch.clientX - canvas.offsetLeft
-  const y = touch.clientY - canvas.offsetTop
-  deltaX = saveX - x
-  saveX = x
+  const currentTouchX = touch.clientX
 
-  console.log(x, deltaX)
+  deltaX = currentTouchX - lastTouchX
 
-  if (deltaX >= 0) {
-    movePieceLeft()
-  } else {
+  if (deltaX >= touchSpeed) {
+    lastTouchX = currentTouchX
     movePieceRight()
   }
 
-  // console.log('Touch Move en (' + x + ', ' + y + ')')
-}
-
-function onTouchStart (eventTouch) {
-  eventTouch.preventDefault()
-  console.log('tocó')
+  if (deltaX <= -touchSpeed) {
+    lastTouchX = currentTouchX
+    movePieceLeft()
+  }
 }
 
 function movePieceLeft () {
@@ -120,40 +128,40 @@ function movePieceRight () {
   }
 }
 
+function movePieceDown () {
+  piece.position.y++
+  if (checkCollition()) {
+    piece.position.y--
+    solidifyPiece()
+    removeRows()
+  }
+}
+
+function rotatePiece () {
+  const rotated = []
+
+  for (let i = 0; i < piece.shape[0].length; i++) {
+    const row = []
+
+    for (let j = piece.shape.length - 1; j >= 0; j--) {
+      row.push(piece.shape[j][i])
+    }
+
+    rotated.push(row)
+  }
+
+  const previousShape = piece.shape
+  piece.shape = rotated
+  if (checkCollition()) {
+    piece.shape = previousShape
+  }
+}
+
 document.addEventListener('keydown', (event) => {
   if (event.key === EVENT_MOVEMENTS.LEFT) movePieceLeft()
   if (event.key === EVENT_MOVEMENTS.RIGHT) movePieceRight()
-  // move down
-  if (event.key === EVENT_MOVEMENTS.DOWN) {
-    piece.position.y++
-    if (checkCollition()) {
-      piece.position.y--
-      solidifyPiece()
-      removeRows()
-    }
-  }
-  // rotate
-  if (event.key === EVENT_MOVEMENTS.UP) {
-    const rotated = []
-
-    // console.log(piece.shape.length)
-
-    for (let i = 0; i < piece.shape[0].length; i++) {
-      const row = []
-
-      for (let j = piece.shape.length - 1; j >= 0; j--) {
-        row.push(piece.shape[j][i])
-      }
-
-      rotated.push(row)
-    }
-
-    const previousShape = piece.shape
-    piece.shape = rotated
-    if (checkCollition()) {
-      piece.shape = previousShape
-    }
-  }
+  if (event.key === EVENT_MOVEMENTS.DOWN) movePieceDown()
+  if (event.key === EVENT_MOVEMENTS.UP) rotatePiece()
 })
 
 // 2. game loop
