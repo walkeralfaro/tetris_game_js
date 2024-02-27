@@ -19,7 +19,7 @@ body {
   display: grid;
   place-content: center;
   height: 100vh;
-  background-image: url('./background.webp');
+  background-image: url('./public/background.webp');
   background-size:cover;
   overscroll-behavior: none;
 }
