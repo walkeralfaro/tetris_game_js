@@ -4,14 +4,14 @@ import { BLOCK_SIZE, BOARD_HEIGHT, BOARD_WIDTH, EVENT_MOVEMENTS, TETRAMINO_SIZE,
 // 1. inicializar el canvas
 const canvas = document.querySelector('canvas')
 const ctx = canvas.getContext('2d')
-// const $score = document.querySelector('span')
+const $score = document.querySelector('span')
 const $tetramino = document.querySelector('#tetraminos')
 
 let deltaX = 0
 let lastTouchX = 0
 const touchSpeed = 24
 
-// let score = 0
+let score = 0
 
 canvas.width = BLOCK_SIZE * BOARD_WIDTH
 canvas.height = BLOCK_SIZE * BOARD_HEIGHT
@@ -35,6 +35,7 @@ const piece = {
 window.addEventListener('touchstart', onTouchStart)
 window.addEventListener('touchmove', onTouchMove)
 window.addEventListener('touchend', onTouchEnd)
+window.addEventListener('wheel', onWheel)
 
 document.addEventListener('keydown', (event) => {
   if (event.key === EVENT_MOVEMENTS.LEFT) movePieceLeft()
@@ -81,6 +82,12 @@ function onTouchMove (eventTouch) {
   if (deltaX <= -touchSpeed) {
     lastTouchX = currentTouchX
     movePieceLeft()
+  }
+}
+
+function onWheel (event) {
+  if (event.deltaY > 0) {
+    event.preventDefault()
   }
 }
 
@@ -156,7 +163,7 @@ function draw () {
 
   drawPiece()
 
-  // $score.innerHTML = score
+  $score.innerHTML = score
 }
 
 function paintImagePiece (image, clipX, clipY, cubeSize, canvasX, canvasY) {
@@ -176,7 +183,6 @@ function paintImagePiece (image, clipX, clipY, cubeSize, canvasX, canvasY) {
 function drawPiece () {
   piece.shape.forEach((row, y) => {
     row.forEach((block, x) => {
-      x += 2
       if (block) {
         const clipX = (block - 1) * TETRAMINO_SIZE
         const clipY = 0
@@ -189,10 +195,8 @@ function drawPiece () {
 }
 
 function drawBoard () {
-  // console.log(board)
   board.forEach((row, y) => {
     row.forEach((block, x) => {
-      x += 2
       if (block !== 0) {
         const clipX = (block - 1) * TETRAMINO_SIZE
         const clipY = 1 * TETRAMINO_SIZE

@@ -5,7 +5,7 @@
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #696969;
+  background-color: #a5a5a5;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -19,4 +19,11 @@ body {
   display: grid;
   place-content: center;
   height: 100vh;
+}
+
+canvas {
+  border: 3px solid rgb(250, 250, 250);
+  padding: 5px;
+  border-radius: 8px;
+  background-color: rgb(78, 78, 78);
 }
