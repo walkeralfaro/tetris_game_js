@@ -35,7 +35,6 @@ const piece = {
 window.addEventListener('touchstart', onTouchStart)
 window.addEventListener('touchmove', onTouchMove)
 window.addEventListener('touchend', onTouchEnd)
-window.addEventListener('wheel', onWheel)
 
 document.addEventListener('keydown', (event) => {
   if (event.key === EVENT_MOVEMENTS.LEFT) movePieceLeft()
@@ -82,12 +81,6 @@ function onTouchMove (eventTouch) {
   if (deltaX <= -touchSpeed) {
     lastTouchX = currentTouchX
     movePieceLeft()
-  }
-}
-
-function onWheel (event) {
-  if (event.deltaY > 0) {
-    event.preventDefault()
   }
 }
 
