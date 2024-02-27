@@ -1,33 +1,22 @@
 import './style.css'
 import { BLOCK_SIZE, BOARD_HEIGHT, BOARD_WIDTH, EVENT_MOVEMENTS, TETRAMINO_SIZE, PIECES } from './consts'
 
-let $BLOCK_SIZE = 0
-const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
-if (isMobile) {
-  // Estamos en un dispositivo móvil
-  console.log('Estás en un dispositivo móvil')
-  $BLOCK_SIZE = BLOCK_SIZE * 2
-} else {
-  // No estamos en un dispositivo móvil
-  $BLOCK_SIZE = BLOCK_SIZE
-  console.log('No estás en un dispositivo móvil')
-}
 // 1. inicializar el canvas
 const canvas = document.querySelector('canvas')
 const ctx = canvas.getContext('2d')
-const $score = document.querySelector('span')
+// const $score = document.querySelector('span')
 const $tetramino = document.querySelector('#tetraminos')
 
 let deltaX = 0
 let lastTouchX = 0
 const touchSpeed = 24
 
-let score = 0
+// let score = 0
 
-canvas.width = $BLOCK_SIZE * BOARD_WIDTH
-canvas.height = $BLOCK_SIZE * BOARD_HEIGHT
+canvas.width = BLOCK_SIZE * BOARD_WIDTH
+canvas.height = BLOCK_SIZE * BOARD_HEIGHT
 
-ctx.scale($BLOCK_SIZE, $BLOCK_SIZE)
+ctx.scale(BLOCK_SIZE, BLOCK_SIZE)
 
 // 3. board
 const board = createBoard(BOARD_WIDTH, BOARD_HEIGHT)
@@ -42,39 +31,6 @@ const piece = {
   shape: [],
   color: 0
 }
-
-// 9. random pieces
-// const PIECES = [
-//   [
-//     [7, 7, 7, 7]
-//   ],
-//   [
-//     [0, 2],
-//     [0, 2],
-//     [2, 2]
-//   ],
-//   [
-//     [4, 0],
-//     [4, 0],
-//     [4, 4]
-//   ],
-//   [
-//     [8, 8],
-//     [8, 8]
-//   ],
-//   [
-//     [0, 3, 3],
-//     [3, 3, 0]
-//   ],
-//   [
-//     [0, 5, 0],
-//     [5, 5, 5]
-//   ],
-//   [
-//     [6, 6, 0],
-//     [0, 6, 6]
-//   ]
-// ]
 
 window.addEventListener('touchstart', onTouchStart)
 window.addEventListener('touchmove', onTouchMove)
