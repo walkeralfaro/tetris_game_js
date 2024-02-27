@@ -1,17 +1,22 @@
 import './style.css'
-import { BLOCK_SIZE, BOARD_HEIGHT, BOARD_WIDTH, EVENT_MOVEMENTS, TETRAMINO_SIZE } from './consts'
+import { BLOCK_SIZE, BOARD_HEIGHT, BOARD_WIDTH, EVENT_MOVEMENTS, TETRAMINO_SIZE, PIECES } from './consts'
 
+let $BLOCK_SIZE = 0
+const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+if (isMobile) {
+  // Estamos en un dispositivo móvil
+  console.log('Estás en un dispositivo móvil')
+  $BLOCK_SIZE = BLOCK_SIZE * 2
+} else {
+  // No estamos en un dispositivo móvil
+  $BLOCK_SIZE = BLOCK_SIZE
+  console.log('No estás en un dispositivo móvil')
+}
 // 1. inicializar el canvas
 const canvas = document.querySelector('canvas')
 const ctx = canvas.getContext('2d')
 const $score = document.querySelector('span')
 const $tetramino = document.querySelector('#tetraminos')
-
-// const $touchRight = false
-// const $touchLeft = false
-// let $touchEnd = true
-
-// const $keyLeft = false
 
 let deltaX = 0
 let lastTouchX = 0
@@ -19,10 +24,10 @@ const touchSpeed = 24
 
 let score = 0
 
-canvas.width = BLOCK_SIZE * BOARD_WIDTH
-canvas.height = BLOCK_SIZE * BOARD_HEIGHT
+canvas.width = $BLOCK_SIZE * BOARD_WIDTH
+canvas.height = $BLOCK_SIZE * BOARD_HEIGHT
 
-ctx.scale(BLOCK_SIZE, BLOCK_SIZE)
+ctx.scale($BLOCK_SIZE, $BLOCK_SIZE)
 
 // 3. board
 const board = createBoard(BOARD_WIDTH, BOARD_HEIGHT)
@@ -39,41 +44,48 @@ const piece = {
 }
 
 // 9. random pieces
-const PIECES = [
-  [
-    [7, 7, 7, 7]
-  ],
-  [
-    [0, 2],
-    [0, 2],
-    [2, 2]
-  ],
-  [
-    [4, 0],
-    [4, 0],
-    [4, 4]
-  ],
-  [
-    [8, 8],
-    [8, 8]
-  ],
-  [
-    [0, 3, 3],
-    [3, 3, 0]
-  ],
-  [
-    [0, 5, 0],
-    [5, 5, 5]
-  ],
-  [
-    [6, 6, 0],
-    [0, 6, 6]
-  ]
-]
+// const PIECES = [
+//   [
+//     [7, 7, 7, 7]
+//   ],
+//   [
+//     [0, 2],
+//     [0, 2],
+//     [2, 2]
+//   ],
+//   [
+//     [4, 0],
+//     [4, 0],
+//     [4, 4]
+//   ],
+//   [
+//     [8, 8],
+//     [8, 8]
+//   ],
+//   [
+//     [0, 3, 3],
+//     [3, 3, 0]
+//   ],
+//   [
+//     [0, 5, 0],
+//     [5, 5, 5]
+//   ],
+//   [
+//     [6, 6, 0],
+//     [0, 6, 6]
+//   ]
+// ]
 
 window.addEventListener('touchstart', onTouchStart)
 window.addEventListener('touchmove', onTouchMove)
 window.addEventListener('touchend', onTouchEnd)
+
+document.addEventListener('keydown', (event) => {
+  if (event.key === EVENT_MOVEMENTS.LEFT) movePieceLeft()
+  if (event.key === EVENT_MOVEMENTS.RIGHT) movePieceRight()
+  if (event.key === EVENT_MOVEMENTS.DOWN) movePieceDown()
+  if (event.key === EVENT_MOVEMENTS.UP) rotatePiece()
+})
 
 const initialTouch = {
   x: 0,
@@ -90,6 +102,7 @@ function onTouchEnd (eventTouch) {
     rotatePiece()
   }
 }
+
 function onTouchStart (eventTouch) {
   const touch = eventTouch.touches[0]
   initialTouch.x = touch.clientX
@@ -158,13 +171,6 @@ function rotatePiece () {
   }
 }
 
-document.addEventListener('keydown', (event) => {
-  if (event.key === EVENT_MOVEMENTS.LEFT) movePieceLeft()
-  if (event.key === EVENT_MOVEMENTS.RIGHT) movePieceRight()
-  if (event.key === EVENT_MOVEMENTS.DOWN) movePieceDown()
-  if (event.key === EVENT_MOVEMENTS.UP) rotatePiece()
-})
-
 // 2. game loop
 let dropCounter = 0
 let lastTime = 0
@@ -194,7 +200,7 @@ function draw () {
 
   drawPiece()
 
-  $score.innerHTML = score
+  // $score.innerHTML = score
 }
 
 function paintImagePiece (image, clipX, clipY, cubeSize, canvasX, canvasY) {
@@ -214,6 +220,7 @@ function paintImagePiece (image, clipX, clipY, cubeSize, canvasX, canvasY) {
 function drawPiece () {
   piece.shape.forEach((row, y) => {
     row.forEach((block, x) => {
+      x += 2
       if (block) {
         const clipX = (block - 1) * TETRAMINO_SIZE
         const clipY = 0
@@ -229,9 +236,10 @@ function drawBoard () {
   // console.log(board)
   board.forEach((row, y) => {
     row.forEach((block, x) => {
+      x += 2
       if (block !== 0) {
         const clipX = (block - 1) * TETRAMINO_SIZE
-        const clipY = 0
+        const clipY = 1 * TETRAMINO_SIZE
         paintImagePiece($tetramino, clipX, clipY, TETRAMINO_SIZE, x, y)
       } else if (block === 0) {
         ctx.fillStyle = 'black'
