@@ -1,4 +1,5 @@
 /* eslint-disable no-undef */
+import './reset.css'
 import './style.css'
 import { BLOCK_SIZE, BOARD_HEIGHT, BOARD_WIDTH, EVENT_MOVEMENTS, TETRAMINO_SIZE, PIECES } from './consts'
 
@@ -7,25 +8,43 @@ const canvas = document.querySelector('canvas')
 const ctx = canvas.getContext('2d')
 const $score = document.querySelector('span')
 const $tetramino = document.querySelector('#tetraminos')
+const playButton = document.querySelector('.play_button')
+const startScreen = document.querySelector('.start_screen')
+
 const sounds = {
   piece_move: chargeAudio('./sounds/piece_move.ogg'),
   piece_landing: chargeAudio('./sounds/piece_landing.ogg'),
   piece_rotate: chargeAudio('./sounds/piece_rotate.ogg'),
   piece_down: chargeAudio('./sounds/piece_down.ogg'),
-  clear_lines: chargeAudio('./sounds/clear_lines.ogg')
+  clear_lines: chargeAudio('./sounds/clear_lines.ogg'),
+  gamestart: chargeAudio('./sounds/gamestart.ogg'),
+  gameover: chargeAudio('./sounds/gameover.ogg'),
+  theme_1: chargeAudio('./sounds/theme_1.ogg'),
+  theme_2: chargeAudio('./sounds/theme_2.ogg')
 }
+const board = createBoard(BOARD_WIDTH, BOARD_HEIGHT)
 
 let deltaX = 0
 let deltaY = 0
 let lastTouchX = 0
 let lastTouchY = 0
-const touchSpeed = 24
-
 let score = 0
+const GameState = {
+  START_SCREEN: 0,
+  PLAYING: 1,
+  GAME_OVER: 2
+}
+let gameState = GameState.START_SCREEN
+const touchSpeed = 24
 
 const initialTouch = {
   x: 0,
   y: 0
+}
+
+const piece = {
+  position: {},
+  shape: []
 }
 
 canvas.width = BLOCK_SIZE * BOARD_WIDTH
@@ -33,22 +52,11 @@ canvas.height = BLOCK_SIZE * BOARD_HEIGHT
 
 ctx.scale(BLOCK_SIZE, BLOCK_SIZE)
 
-// 3. board
-const board = createBoard(BOARD_WIDTH, BOARD_HEIGHT)
-
-function createBoard (width, height) {
-  return Array(height).fill().map(() => Array(width).fill(0))
-}
-
-// 4. pieza player
-const piece = {
-  position: {},
-  shape: []
-}
-
+// Event Listeners
 window.addEventListener('touchstart', onTouchStart)
 window.addEventListener('touchmove', onTouchMove)
 window.addEventListener('touchend', onTouchEnd)
+playButton.addEventListener('click', playGame)
 
 document.addEventListener('keydown', (event) => {
   if (event.key === EVENT_MOVEMENTS.LEFT) movePieceLeft()
@@ -57,15 +65,79 @@ document.addEventListener('keydown', (event) => {
   if (event.key === EVENT_MOVEMENTS.UP) rotatePiece()
 })
 
+// 2. game loop
+let dropCounter = 0
+let lastTime = 0
+
+function update (time) {
+  drawBoard()
+  drawPiece()
+  selfDownMovePiece(time)
+  $score.innerHTML = score
+}
+
+function changedState (newState) {
+  gameState = newState
+}
+
+function drawStartScreen () {
+  startScreen.style.display = 'grid'
+}
+
+function playGame () {
+  changedState(GameState.PLAYING)
+  getRandomPiece()
+  playAudio(sounds.gamestart)
+  playAudio(sounds.theme_1, true, 0.15)
+  startScreen.style.display = 'none'
+}
+
+function drawGame () {
+  // Dibujar el juego en curso
+}
+
+function draw (time = 0) {
+  console.log(gameState)
+  switch (gameState) {
+    case GameState.START_SCREEN:
+      drawStartScreen()
+      break
+    case GameState.PLAYING:
+      update(time)
+      // getRandomPiece()
+      break
+    case GameState.GAME_OVER:
+      drawGameOverScreen()
+      break
+  }
+  window.requestAnimationFrame(draw)
+}
+
+function createBoard (width, height) {
+  return Array(height).fill().map(() => Array(width).fill(0))
+}
+
 function chargeAudio (urlAudio) {
   const audio = new Audio()
   audio.src = urlAudio
   return audio
 }
 
-function playAudio (audio) {
+function playAudio (audio, loop = false, volume = 0.5, stop = false) {
+  if (gameState !== GameState.PLAYING) return
   const newAudioInstance = audio.cloneNode()
-  newAudioInstance.volume = 0.5
+  newAudioInstance.volume = volume
+  if (stop) {
+    newAudioInstance.pause()
+    newAudioInstance.currentTime = 0
+    return
+  }
+  if (loop) {
+    newAudioInstance.addEventListener('ended', () => {
+      newAudioInstance.currentTime = 0
+      newAudioInstance.play()
+    })
+  }
   newAudioInstance.play()
 }
 
@@ -138,7 +210,20 @@ function movePieceDown () {
   }
 }
 
+function selfDownMovePiece (time) {
+  const deltaTime = time - lastTime
+  lastTime = time
+
+  dropCounter += deltaTime
+
+  if (dropCounter > 1000) {
+    dropCounter = 0
+    movePieceDown()
+  }
+}
+
 function rotatePiece () {
+  if (gameState !== GameState.PLAYING) return
   playAudio(sounds.piece_rotate)
   const rotated = []
 
@@ -159,34 +244,7 @@ function rotatePiece () {
   }
 }
 
-// 2. game loop
-let dropCounter = 0
-let lastTime = 0
-
-function update (time = 0) {
-  const deltaTime = time - lastTime
-  lastTime = time
-
-  dropCounter += deltaTime
-
-  if (dropCounter > 1000) {
-    dropCounter = 0
-    movePieceDown()
-  }
-
-  draw()
-  window.requestAnimationFrame(update)
-}
-
-function draw () {
-  drawBoard()
-
-  drawPiece()
-
-  $score.innerHTML = score
-}
-
-function paintImagePiece (image, clipX, clipY, cubeSize, canvasX, canvasY) {
+function paintImageBlock (image, clipX, clipY, cubeSize, canvasX, canvasY) {
   ctx.drawImage(
     image,
     clipX,
@@ -208,7 +266,7 @@ function drawPiece () {
         const clipY = 0
         const canvasX = x + piece.position.x
         const canvasY = y + piece.position.y
-        paintImagePiece($tetramino, clipX, clipY, TETRAMINO_SIZE, canvasX, canvasY)
+        paintImageBlock($tetramino, clipX, clipY, TETRAMINO_SIZE, canvasX, canvasY)
       }
     })
   })
@@ -220,7 +278,7 @@ function drawBoard () {
       if (block !== 0) {
         const clipX = (block - 1) * TETRAMINO_SIZE
         const clipY = 1 * TETRAMINO_SIZE
-        paintImagePiece($tetramino, clipX, clipY, TETRAMINO_SIZE, x, y)
+        paintImageBlock($tetramino, clipX, clipY, TETRAMINO_SIZE, x, y)
       } else if (block === 0) {
         ctx.fillStyle = 'black'
         ctx.fillRect(x, y, 1, 1)
@@ -291,8 +349,8 @@ function gameOver () {
   }
 }
 
-getRandomPiece()
-update()
+// getRandomPiece()
+draw()
 
 // let gameState = 'start'; // Estado inicial del juego
 
