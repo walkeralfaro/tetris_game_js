@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import './style.css'
 import { BLOCK_SIZE, BOARD_HEIGHT, BOARD_WIDTH, EVENT_MOVEMENTS, TETRAMINO_SIZE, PIECES } from './consts'
 
@@ -6,12 +7,26 @@ const canvas = document.querySelector('canvas')
 const ctx = canvas.getContext('2d')
 const $score = document.querySelector('span')
 const $tetramino = document.querySelector('#tetraminos')
+const sounds = {
+  piece_move: chargeAudio('./sounds/piece_move.ogg'),
+  piece_landing: chargeAudio('./sounds/piece_landing.ogg'),
+  piece_rotate: chargeAudio('./sounds/piece_rotate.ogg'),
+  piece_down: chargeAudio('./sounds/piece_down.ogg'),
+  clear_lines: chargeAudio('./sounds/clear_lines.ogg')
+}
 
 let deltaX = 0
+let deltaY = 0
 let lastTouchX = 0
+let lastTouchY = 0
 const touchSpeed = 24
 
 let score = 0
+
+const initialTouch = {
+  x: 0,
+  y: 0
+}
 
 canvas.width = BLOCK_SIZE * BOARD_WIDTH
 canvas.height = BLOCK_SIZE * BOARD_HEIGHT
@@ -28,8 +43,7 @@ function createBoard (width, height) {
 // 4. pieza player
 const piece = {
   position: {},
-  shape: [],
-  color: 0
+  shape: []
 }
 
 window.addEventListener('touchstart', onTouchStart)
@@ -43,12 +57,17 @@ document.addEventListener('keydown', (event) => {
   if (event.key === EVENT_MOVEMENTS.UP) rotatePiece()
 })
 
-const initialTouch = {
-  x: 0,
-  y: 0
+function chargeAudio (urlAudio) {
+  const audio = new Audio()
+  audio.src = urlAudio
+  return audio
 }
 
-// let lastTouchX = 0
+function playAudio (audio) {
+  const newAudioInstance = audio.cloneNode()
+  newAudioInstance.volume = 0.5
+  newAudioInstance.play()
+}
 
 function onTouchEnd (eventTouch) {
   const endTouchX = eventTouch.changedTouches[0].clientX
@@ -65,13 +84,16 @@ function onTouchStart (eventTouch) {
   initialTouch.y = touch.clientY
 
   lastTouchX = initialTouch.x
+  lastTouchY = initialTouch.y
 }
 
 function onTouchMove (eventTouch) {
   const touch = eventTouch.touches[0]
   const currentTouchX = touch.clientX
+  const currentTouchY = touch.clientY
 
   deltaX = currentTouchX - lastTouchX
+  deltaY = currentTouchY - lastTouchY
 
   if (deltaX >= touchSpeed) {
     lastTouchX = currentTouchX
@@ -82,9 +104,15 @@ function onTouchMove (eventTouch) {
     lastTouchX = currentTouchX
     movePieceLeft()
   }
+
+  if (deltaY >= touchSpeed) {
+    lastTouchY = currentTouchY
+    movePieceDown()
+  }
 }
 
 function movePieceLeft () {
+  playAudio(sounds.piece_move)
   piece.position.x--
   if (checkCollition()) {
     piece.position.x++
@@ -93,14 +121,17 @@ function movePieceLeft () {
 
 function movePieceRight () {
   piece.position.x++
+  playAudio(sounds.piece_move)
   if (checkCollition()) {
     piece.position.x--
   }
 }
 
 function movePieceDown () {
+  playAudio(sounds.piece_down)
   piece.position.y++
   if (checkCollition()) {
+    playAudio(sounds.piece_landing)
     piece.position.y--
     solidifyPiece()
     removeRows()
@@ -108,6 +139,7 @@ function movePieceDown () {
 }
 
 function rotatePiece () {
+  playAudio(sounds.piece_rotate)
   const rotated = []
 
   for (let i = 0; i < piece.shape[0].length; i++) {
@@ -139,12 +171,7 @@ function update (time = 0) {
 
   if (dropCounter > 1000) {
     dropCounter = 0
-    piece.position.y++
-    if (checkCollition()) {
-      piece.position.y--
-      solidifyPiece()
-      removeRows()
-    }
+    movePieceDown()
   }
 
   draw()
@@ -235,6 +262,7 @@ function removeRows () {
   board.forEach((row, y) => {
     if (row.every(block => block !== 0)) {
       rowsToRemove.push(y)
+      playAudio(sounds.clear_lines)
     }
   })
 
