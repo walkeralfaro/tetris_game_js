@@ -1,7 +1,25 @@
 /* eslint-disable no-undef */
 import './reset.css'
 import './style.css'
-import { BLOCK_SIZE, BOARD_HEIGHT, BOARD_WIDTH, EVENT_MOVEMENTS, TETRAMINO_SIZE, PIECES } from './consts'
+import { BOARD_HEIGHT, BOARD_WIDTH, EVENT_MOVEMENTS, TETRAMINO_SIZE, PIECES } from './consts'
+
+// TEST **************************************************************************
+const widthViewport = window.innerWidth
+const heightViewport = window.innerHeight
+let BLOCK_SIZE = 20
+
+// Mostrar el tamaño del viewport en la consola
+console.log('Ancho del viewport: ' + widthViewport + 'px')
+console.log('Alto del viewport: ' + heightViewport + 'px')
+
+function calcCanvasSize () {
+  const heightCanvasShould = heightViewport - 250
+  BLOCK_SIZE = heightCanvasShould / BOARD_HEIGHT
+}
+
+calcCanvasSize()
+
+// ********************************************************************************
 
 // 1. inicializar el canvas
 const canvas = document.querySelector('canvas')
@@ -41,7 +59,7 @@ const GameState = {
 }
 let gameState = GameState.START_SCREEN
 
-const touchSpeed = 24
+const touchSpeed = BLOCK_SIZE
 let downSpeedPiece = 800
 let level = 1
 const scoreToChangeLevel = 50
@@ -67,6 +85,11 @@ window.addEventListener('touchmove', onTouchMove)
 window.addEventListener('touchend', onTouchEnd)
 playButton.addEventListener('click', playGame)
 startButton.addEventListener('click', startGame)
+document.addEventListener('fullscreenchange', () => {
+  if (!document.fullscreenElement) {
+    showUrlAddressBar()
+  }
+})
 
 document.addEventListener('keydown', (event) => {
   if (event.key === EVENT_MOVEMENTS.LEFT) movePieceLeft()
@@ -379,10 +402,8 @@ function removeRows () {
 
   rowsToRemove.forEach(y => {
     board.splice(y, 1)
-    console.log(board)
     const voidRow = Array(BOARD_WIDTH).fill(0)
     board.unshift(voidRow)
-    console.log(board)
     score += 10
   })
 }
@@ -414,4 +435,12 @@ function resetValues () {
   board.forEach((row) => row.fill(0))
 }
 
+// Show url address bar
+function showUrlAddressBar () {
+  if (document.fullscreenElement) {
+    document.exitFullscreen()
+  }
+}
+
+showUrlAddressBar()
 draw()
