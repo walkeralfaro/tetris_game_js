@@ -8,9 +8,15 @@ const widthViewport = window.innerWidth
 const heightViewport = window.innerHeight
 let BLOCK_SIZE = 20
 
+const viewportheight = document.querySelector('.viewportheight')
+const viewportwidth = document.querySelector('.viewportwidth')
+
 // Mostrar el tamaño del viewport en la consola
 console.log('Ancho del viewport: ' + widthViewport + 'px')
 console.log('Alto del viewport: ' + heightViewport + 'px')
+
+viewportheight.innerHTML = `${heightViewport}`
+viewportwidth.innerHTML = `${widthViewport}`
 
 function calcCanvasSize () {
   const heightCanvasShould = heightViewport - 250

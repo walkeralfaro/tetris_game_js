@@ -19,7 +19,7 @@ body {
   padding: 0;
   display: grid;
   place-content: center;
-  height: 100vh;
+  height: 100svh;
   background-image: url('./public/background.webp');
   background-size:cover;
   overscroll-behavior: none;
