@@ -14,6 +14,7 @@
 }
 
 body {
+  position: relative;
   color: rgb(250, 250, 250);
   margin: 0;
   padding: 0;
@@ -25,6 +26,18 @@ body {
   overscroll-behavior: none;
 }
 
+.score_container {
+  padding: 2px 12px;
+  margin-top: 8px;
+  font-size: 18px;
+  background-color: rgba(15, 35, 78, 0.85);
+  border-radius: 8px;
+
+  .output_value {
+    font-weight:500;
+  }
+}
+
 canvas {
   border: 3px solid rgb(250, 250, 250);
   padding: 5px;
@@ -33,12 +46,8 @@ canvas {
   box-shadow: 0 0 20px 0 rgba(255, 255, 255, 1) ;
 }
 
-.container_canvas {
-  position: relative;
-}
-
 .start_screen {
-  background: linear-gradient(180deg, rgb(63, 6, 112) 0%, rgb(14, 109, 136) 100%);
+  background: linear-gradient(180deg, rgb(63, 6, 112) 0%, rgb(17, 146, 182) 100%);
   position: absolute;
   top: 0;
   left: 0;
@@ -62,11 +71,12 @@ canvas {
     border-radius: 8px;
     font-size: 24px;
     border: none;
+    cursor: pointer;
   }
 }
 
 .gameover_screen {
-  background: linear-gradient(180deg, rgb(0, 0, 0) 0%, rgb(59, 59, 59) 100%);
+  background: rgba(0, 0, 0, 0.75);
   position: absolute;
   top: 0;
   left: 0;
@@ -87,4 +97,28 @@ canvas {
     color: rgb(221, 208, 28);
   }
 }
+.footer_container {
 
+  position: absolute;
+  width: 100dvw;
+  top: 0;
+  text-align: center;
+  background-color: rgba(17, 146, 182, .8);
+  padding: 1px 0;
+}
+footer{
+  display: flex;
+  justify-content: center;
+  text-align: center; 
+}
+
+.footer_paragraph{
+  color: rgb(255, 255, 255);
+  display: flex;
+  gap: 4px;
+
+  a {
+    color: rgb(63, 6, 112);
+    font-weight: bold;
+  }
+}

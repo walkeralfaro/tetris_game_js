@@ -4,34 +4,14 @@ import './style.css'
 import { BOARD_HEIGHT, BOARD_WIDTH, EVENT_MOVEMENTS, TETRAMINO_SIZE, PIECES } from './consts'
 
 // TEST **************************************************************************
-const widthViewport = window.innerWidth
-const heightViewport = window.innerHeight
-let BLOCK_SIZE = 20
-
-const viewportheight = document.querySelector('.viewportheight')
-const viewportwidth = document.querySelector('.viewportwidth')
-
-// Mostrar el tamaño del viewport en la consola
-console.log('Ancho del viewport: ' + widthViewport + 'px')
-console.log('Alto del viewport: ' + heightViewport + 'px')
-
-viewportheight.innerHTML = `${heightViewport}`
-viewportwidth.innerHTML = `${widthViewport}`
-
-function calcCanvasSize () {
-  const heightCanvasShould = heightViewport - 250
-  BLOCK_SIZE = heightCanvasShould / BOARD_HEIGHT
-}
-
-calcCanvasSize()
 
 // ********************************************************************************
 
 // 1. inicializar el canvas
 const canvas = document.querySelector('canvas')
 const ctx = canvas.getContext('2d')
-const $score = document.querySelector('.score')
-const $lastScore = document.querySelector('.last_score')
+const $score = document.querySelector('.score_value')
+const $lastScore = document.querySelector('.last_score_value')
 const tetramino = document.querySelector('#tetraminos')
 const playButton = document.querySelector('.play_button')
 const startScreen = document.querySelector('.start_screen')
@@ -58,6 +38,8 @@ let lastTouchX = 0
 let lastTouchY = 0
 let score = 0
 let lastScore = 0
+const BLOCK_SIZE = calcBlockSize()
+
 const GameState = {
   START_SCREEN: 0,
   PLAYING: 1,
@@ -358,7 +340,7 @@ function createBoard (width, height) {
 }
 
 function drawLevelOnCanvas () {
-  ctx.fillStyle = 'rgba(255,255,255,.4)'
+  ctx.fillStyle = 'rgba(255,255,255,.35)'
   if (level >= 10) {
     ctx.font = 'bold 8px Arial'
     ctx.fillText(level, 0.5, 10)
@@ -446,6 +428,11 @@ function showUrlAddressBar () {
   if (document.fullscreenElement) {
     document.exitFullscreen()
   }
+}
+
+// Calculate the height of the canvas
+function calcBlockSize () {
+  return (window.innerHeight - 175) / BOARD_HEIGHT
 }
 
 showUrlAddressBar()
