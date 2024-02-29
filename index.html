@@ -9,18 +9,25 @@
 <body>
 
   <div class="container">
-    <canvas></canvas>
-    <div class="start_screen">
-      <img class="start_screen_logo" src="./tetris_logo.svg" alt="logo de tetris">
-      <!-- <p class="start_screen_title">TETRIS</p> -->
-      <button class="play_button">INICIAR</button>
+
+    <div class="container_canvas">
+      <canvas></canvas>
+      <div class="start_screen">
+        <img class="start_screen_logo" src="./tetris_logo.svg" alt="logo de tetris">
+        <button class="play_button">INICIAR</button>
+      </div>
+      <div class="gameover_screen">
+        <p class="gameover_title">GAME OVER</p>
+        <a class="gameover_click">click here</a>
+      </div>
     </div>
+  
+    <strong>Score: <span class="score"></span> </strong>
+    <strong>Last Score: <span class="last_score"></span></strong>
   </div>
 
-  <strong>Puntuación: <span></span> </strong>
-  <img hidden id="tetraminos" src="./tetraminos.webp" alt="Tetraminos sprite">
 
+  <img hidden id="tetraminos" src="./tetraminos.webp" alt="Tetraminos sprite">
   <script type="module" src="./main.js"></script>
-  
 </body>
 </html>
