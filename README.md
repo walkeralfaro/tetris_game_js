@@ -20,14 +20,14 @@ El juego corre en un bucle que renderiza un canvas de manera sincronizada con el
 function draw () {
   switch (gameState) {
     case GameState.START_SCREEN:
-      // Functions that draw the start screen
+      // Dibujar la pantalla de inicio
       break
     case GameState.PLAYING:
-      // Function that executes all gameplay functions
+      // La función update() actualiza el juego en tiempo real
       update()
       break
     case GameState.GAME_OVER:
-      // Functions that draw the game over screen
+      // Dibujar la pantalla de game over
       break
   }
   window.requestAnimationFrame(draw)

@@ -4,19 +4,41 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="shortcut icon" href="./favicon.png" type="image/x-icon">
+  <link rel="preload" href="loader.css" as="style">
+  <link rel="stylesheet" href="loader.css">
   <title>Tetris JS</title>
 </head>
 <body>
+  
+  <!-- Loader -->
+  <div class="loader_screen">
+    <span class="loader"></span>
+  </div>
 
-    <canvas></canvas>
-    <div class="start_screen">
-      <img class="start_screen_logo" src="./tetris_logo.svg" alt="logo de tetris">
-      <button class="play_button">INICIAR</button>
+  <!-- Canvas -->
+  <canvas></canvas>
+
+  <!-- Pantalla de inicio -->
+  <div class="start_screen">
+    <img class="start_screen_logo" src="./tetris_logo.svg" alt="logo de tetris">
+    <button class="play_button">INICIAR</button>
+    <div class="links">
+      <a href="" class="linkedin_url">
+        <img src="./github.svg" alt="github logo">
+      </a>
+      <a href="" class="github_url">
+        <img src="./linkedin.svg" alt="linkedin logo">
+      </a>
     </div>
-    <div class="gameover_screen">
-      <p class="gameover_title">GAME OVER</p>
-      <a class="gameover_click">click here</a>
-    </div>
+  </div>
+
+  <!-- Pantalla Game Over -->
+  <div class="gameover_screen">
+    <p class="gameover_title">GAME OVER</p>
+    <a class="gameover_click">click here</a>
+  </div>
+
+  <!-- Score -->
   <div class="score_container">
     <p> Score: <span class="score_value output_value"></span> </p>
     <p>Last Score: <span class="last_score_value output_value"></span></p>

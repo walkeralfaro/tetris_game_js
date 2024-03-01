@@ -16,6 +16,7 @@ const tetramino = document.querySelector('#tetraminos')
 const playButton = document.querySelector('.play_button')
 const startScreen = document.querySelector('.start_screen')
 const gameOverScreen = document.querySelector('.gameover_screen')
+const loaderScreen = document.querySelector('.loader_screen')
 const startButton = document.querySelector('.gameover_click')
 
 const sounds = {
@@ -46,11 +47,12 @@ let lastScore = 0
 const BLOCK_SIZE = calcBlockSize()
 
 const GameState = {
-  START_SCREEN: 0,
-  PLAYING: 1,
-  GAME_OVER: 2
+  LOADER: 0,
+  START_SCREEN: 1,
+  PLAYING: 2,
+  GAME_OVER: 3
 }
-let gameState = GameState.START_SCREEN
+let gameState = GameState.LOADER
 
 const touchSpeed = BLOCK_SIZE
 let downSpeedPiece = 800
@@ -71,6 +73,8 @@ ctx.scale(BLOCK_SIZE, BLOCK_SIZE)
 window.addEventListener('touchstart', onTouchStart)
 window.addEventListener('touchmove', onTouchMove)
 window.addEventListener('touchend', onTouchEnd)
+window.onload = () => { gameState = GameState.START_SCREEN }
+
 playButton.addEventListener('click', playGame)
 startButton.addEventListener('click', startGame)
 document.addEventListener('fullscreenchange', () => {
@@ -92,6 +96,9 @@ let lastTime = 0
 
 function draw (time = 0) {
   switch (gameState) {
+    case GameState.LOADER:
+      drawLoaderScreen()
+      break
     case GameState.START_SCREEN:
       drawStartScreen()
       drawLevelOnCanvas()
@@ -115,6 +122,13 @@ function update (time) {
   $score.innerHTML = score
 }
 
+// Loader
+function drawLoaderScreen () {
+  loaderScreen.style.display = 'grid'
+  gameOverScreen.style.display = 'none'
+  startScreen.style.display = 'none'
+}
+
 // Handle state functions
 function changedState (newState) {
   gameState = newState
@@ -127,6 +141,7 @@ function startGame () {
 function drawStartScreen () {
   startScreen.style.display = 'grid'
   gameOverScreen.style.display = 'none'
+  loaderScreen.style.display = 'none'
 }
 
 function playGame () {
@@ -149,6 +164,7 @@ function gameOver () {
 
 function drawGameOverScreen () {
   gameOverScreen.style.display = 'grid'
+  loaderScreen.style.display = 'none'
 }
 
 // Audio functions
