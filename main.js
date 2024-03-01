@@ -36,6 +36,11 @@ let deltaX = 0
 let deltaY = 0
 let lastTouchX = 0
 let lastTouchY = 0
+const initialTouch = {
+  x: 0,
+  y: 0
+}
+
 let score = 0
 let lastScore = 0
 const BLOCK_SIZE = calcBlockSize()
@@ -51,11 +56,6 @@ const touchSpeed = BLOCK_SIZE
 let downSpeedPiece = 800
 let level = 1
 const scoreToChangeLevel = 50
-
-const initialTouch = {
-  x: 0,
-  y: 0
-}
 
 const piece = {
   position: {},
@@ -164,10 +164,7 @@ function playAudio (audio, loop = false, volume = 0.8) {
   newAudioInstance.volume = volume
 
   if (loop) {
-    newAudioInstance.addEventListener('ended', () => {
-      newAudioInstance.currentTime = 0
-      newAudioInstance.play()
-    })
+    newAudioInstance.loop = true
   }
 
   newAudioInstance.play()
@@ -179,6 +176,7 @@ function stopAudio (audio) {
   const soundName = Object.keys(sounds).find(key => sounds[key] === audio)
   if (audioInstances[soundName]) {
     audioInstances[soundName].pause()
+    audioInstances[soundName].loop = false
     audioInstances[soundName].currentTime = 0
   }
 }

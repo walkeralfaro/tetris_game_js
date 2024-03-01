@@ -6,6 +6,11 @@ El juego Tetris desarrollado integramente con JavaScript, sin bibliotecas extern
 [link_tetris]: https://github.com/midudev/tetris-code-interview.git
 [link_midudev]: https://www.youtube.com/watch?v=pNiyz0sl1no
 
+## Demo
+Este es el link del juego [Tetris JS][link_demo_tetris]
+
+[link_demo_tetris]: https://tetris.walkeralfaro.com
+
 ## Development
 
 ### Game Loop:
@@ -43,7 +48,116 @@ El sonido es importante en todo videojuego, por eso se realizó la administraci�
 
 ```javascript
 const audioInstances = {}
+
+// En este objeto se cargan el origen de los audios
+const sounds = {
+  audio_1: chargeAudio('./audio_1.ogg'),
+  ...
+}
+
+// Crea una nueva instancia Audio. Retorna el objeto audio de sounds.audio_1
+function chargeAudio (urlAudio) {
+  const audio = new Audio()
+  audio.src = urlAudio
+  return audio
+}
+
+// Se crea otro nodo y se le puede modificar el volumen, si entra en loop
+function playAudio (audio, loop = false, volume = 0.8) {
+  const newAudioInstance = audio.cloneNode()
+  newAudioInstance.volume = volume
+
+  if (loop) {
+    newAudioInstance.loop = true
+  }
+
+  newAudioInstance.play()
+  const soundName = Object.keys(sounds).find(key => sounds[key] === audio)
+  // se guarda el audio en una lista de instancias para luego modificarlas
+  audioInstances[soundName] = newAudioInstance
+}
+
+// Detiene un audio específico listado en 'audioInstances'
+function stopAudio (audio) {
+  const soundName = Object.keys(sounds).find(key => sounds[key] === audio)
+  if (audioInstances[soundName]) {
+    audioInstances[soundName].pause()
+    audioInstances[soundName].loop = false
+    audioInstances[soundName].currentTime = 0
+  }
+}
 ```
+
+La `Web Audio API` permite manejar el audio en nuestros documentos HTML con suma facilidad. En este juego se hizo un uso básico. Una posible mejora podría ser un `preload` del audio.
+
+### Touch Controllers:
+
+JavaScript permite el manejo sencillo de pantallas táctiles, proporcionando eventos que son disparados por el toque en pantalla:
+
+```javascript
+// touchstart: detecta si se presionó la pantalla y las coordenadas
+window.addEventListener('touchstart', onTouchStart)
+// touchmove: retorna las coordenadas por donde se desliza el toque
+window.addEventListener('touchmove', onTouchMove)
+// touchend: detecta cuando se terminó de tocar la pantalla
+window.addEventListener('touchend', onTouchEnd)
+
+let deltaX = 0
+let deltaY = 0
+let lastTouchX = 0
+let lastTouchY = 0
+const initialTouch = {
+  x: 0,
+  y: 0
+}
+
+// Este codigo compara si el toque final e inicial tienes las mismas coordenadas, si es así lanza la función de rotar la ficha
+function onTouchEnd (eventTouch) {
+  const endTouchX = eventTouch.changedTouches[0].clientX
+  const endTouchY = eventTouch.changedTouches[0].clientY
+
+  if (endTouchX === initialTouch.x && endTouchY === initialTouch.y) {
+    rotatePiece()
+  }
+}
+
+// Esta función almacena las coordenadas del primer toque en pantalla
+function onTouchStart (eventTouch) {
+  const touch = eventTouch.touches[0]
+  // Se guardan las coordenadas del primer toque
+  initialTouch.x = touch.clientX
+  initialTouch.y = touch.clientY
+  // El toque inicial es el último toque para la función onTouchMove()
+  lastTouchX = initialTouch.x
+  lastTouchY = initialTouch.y
+}
+
+// Esta función compara las coordenadas del último toque (lasTouchX, lastTouchY) con las coordenadas del toque actual, dependiendo de la diferencia (deltaX, deltaY) se muve la pieza a la derecha, izquierda, o abajo
+function onTouchMove (eventTouch) {
+  const touch = eventTouch.touches[0]
+  const currentTouchX = touch.clientX
+  const currentTouchY = touch.clientY
+
+  deltaX = currentTouchX - lastTouchX
+  deltaY = currentTouchY - lastTouchY
+
+  if (deltaX >= touchSpeed) {
+    lastTouchX = currentTouchX
+    movePieceRight()
+  }
+
+  if (deltaX <= -touchSpeed) {
+    lastTouchX = currentTouchX
+    movePieceLeft()
+  }
+
+  if (deltaY >= touchSpeed) {
+    lastTouchY = currentTouchY
+    movePieceDown()
+  }
+}
+```
+
 
 
 ## Tech Stack
