@@ -134,7 +134,7 @@ function playGame () {
   changedState(GameState.PLAYING)
   getRandomPiece()
   playAudio(sounds.gamestart)
-  playAudio(sounds.theme_1, true, 0.15)
+  playAudio(sounds.theme_1, true, 0.4)
   startScreen.style.display = 'none'
 }
 
@@ -158,7 +158,7 @@ function chargeAudio (urlAudio) {
   return audio
 }
 
-function playAudio (audio, loop = false, volume = 0.5) {
+function playAudio (audio, loop = false, volume = 0.8) {
   if (gameState === GameState.START_SCREEN) return
   const newAudioInstance = audio.cloneNode()
   newAudioInstance.volume = volume
