@@ -13,7 +13,14 @@ Este es el link del juego [Tetris JS][link_demo_tetris]
 
 ## Screenshot
 
-### Screen Start
+### Start Screen:
+<img src="https://raw.githubusercontent.com/walkeralfaro/tetris_game_js/main/screenshots/start_screen.webp" alt="drawing" width="350"/>
+
+### Play Screen:
+<img src="https://raw.githubusercontent.com/walkeralfaro/tetris_game_js/main/screenshots/tetris_play.webp" alt="drawing" width="350"/>
+
+### Game Over Screen:
+<img src="https://raw.githubusercontent.com/walkeralfaro/tetris_game_js/main/screenshots/game_over_screen.webp" alt="drawing" width="350"/>
 
 ## Development
 
