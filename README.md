@@ -11,6 +11,10 @@ Este es el link del juego [Tetris JS][link_demo_tetris]
 
 [link_demo_tetris]: https://tetris.walkeralfaro.com
 
+## Screenshot
+
+### Screen Start
+
 ## Development
 
 ### Game Loop:
