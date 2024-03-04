@@ -27,8 +27,7 @@ const sounds = {
   clear_lines: chargeAudio('./sounds/clear_lines.ogg'),
   gamestart: chargeAudio('./sounds/gamestart.ogg'),
   gameover: chargeAudio('./sounds/gameover.ogg'),
-  theme_1: chargeAudio('./sounds/theme_1.ogg'),
-  theme_2: chargeAudio('./sounds/theme_2.ogg')
+  theme_1: chargeAudio('./sounds/theme_1.ogg')
 }
 const audioInstances = {}
 const board = createBoard(BOARD_WIDTH, BOARD_HEIGHT)
@@ -45,6 +44,11 @@ const initialTouch = {
 let score = 0
 let lastScore = 0
 const BLOCK_SIZE = calcBlockSize()
+
+console.log(BLOCK_SIZE)
+console.log(window.innerHeight)
+console.log(window.innerWidth)
+console.log(BOARD_HEIGHT)
 
 const GameState = {
   LOADER: 0,

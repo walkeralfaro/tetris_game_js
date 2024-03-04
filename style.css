@@ -20,7 +20,7 @@ body {
   padding: 0;
   display: grid;
   place-content: center;
-  height: 100svh;
+  /* height: 100svh; */
   background-image: url('./public/background.webp');
   background-size:cover;
   overscroll-behavior: none;
@@ -111,6 +111,7 @@ canvas {
     color: rgb(221, 208, 28);
   }
 }
+
 .footer_container {
   position: absolute;
   width: 100dvw;
