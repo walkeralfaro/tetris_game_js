@@ -45,11 +45,6 @@ let score = 0
 let lastScore = 0
 const BLOCK_SIZE = calcBlockSize()
 
-console.log(BLOCK_SIZE)
-console.log(window.innerHeight)
-console.log(window.innerWidth)
-console.log(BOARD_HEIGHT)
-
 const GameState = {
   LOADER: 0,
   START_SCREEN: 1,
@@ -161,8 +156,8 @@ function gameOver () {
   changedState(GameState.GAME_OVER)
   lastScore = score
   $lastScore.innerHTML = lastScore
-  stopAudio(sounds.theme_1)
   playAudio(sounds.gameover)
+  stopAudio(sounds.theme_1)
   resetValues()
 }
 
